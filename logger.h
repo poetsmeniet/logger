@@ -21,10 +21,17 @@ freely, subject to the following restrictions:
 */
 #ifndef LOGGER_H_
 #define LOGGER_H_
+
+/* Log level enumerations */
 enum {LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_CRIT};
 
+/* The first function to call */
 void initLogr(const char * LOGFILE);
-void logr(const int sev, const char* msg, ...);
+
+/* The actual logging function */
+void logr(int sev, const char* msg, ...);
+
+/* Always call after use of logger */
 void termLogr();
 
 #endif

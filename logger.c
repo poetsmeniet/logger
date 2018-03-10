@@ -1,5 +1,5 @@
 /*
-tcp_pthread_coban
+logger
 
 Copyright (c) 2017 Thomas Wink <thomas@geenbs.nl>
 
@@ -18,49 +18,54 @@ freely, subject to the following restrictions:
 2. Altered source versions must be plainly marked as such, and must not be
    misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
+
+Thanks a lot to these helpful posts: 
+https://cboard.cprogramming.com/c-programming/172128-question-regarding-global-variable-c-new-post.html
 */
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <stdarg.h> //varargs
+#include <stdarg.h> 
 #define LOGLVL 0
 #define MAXLOGLVL 4
-// Thanks a lot to these helpful posts: 
-// https://cboard.cprogramming.com/c-programming/172128-question-regarding-global-variable-c-new-post.html
+#define MAXCHARS 256
  
 struct logVar{
     FILE *lfp;
 };
+
 static const char *sevs[4] = {
     "debug","info","warn","crit"
 };
 
 static struct logVar logVars; 
 
+/* The first function to call */
 void initLogr(const char *LOGFILE){
     logVars.lfp=fopen(LOGFILE, "a");
     if(logVars.lfp == NULL){
         printf("Error opening log file '%s', exit..\n",LOGFILE);
         exit(EXIT_FAILURE);
     }
-    setlinebuf(logVars.lfp);
 }
 
+/* Always call after use of logger */
 void termLogr(){
     fclose(logVars.lfp);
 }
 
-void logr(const int sev, const char *msg, ...){
+/* The actual logging function */
+void logr(int sev, const char *msg, ...){
     if(sev >= LOGLVL && sev < MAXLOGLVL){
 
-        char buf[256];
+        char buf[MAXCHARS];
         va_list args;
+        time_t t = time(NULL);
+        char strftBuf[25];
         va_start (args, msg);
-        vsnprintf (buf, 256, msg, args);
+        vsnprintf (buf, MAXCHARS, msg, args);
         va_end(args);
 
-        time_t t = time(NULL);
-        char strftBuf[50];
         strftime(strftBuf, sizeof strftBuf, "%c", localtime(&t));
 
         fprintf(logVars.lfp, "%s :: %s\t%s\n", strftBuf, sevs[sev], buf);
