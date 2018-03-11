@@ -34,14 +34,16 @@ struct logVar{
     FILE *lfp;
 };
 
-static const char *sevs[4] = {
+static const char *sevs[4] = 
+{
     "debug","info","warn","crit"
 };
 
 static struct logVar logVars; 
 
 /* The first function to call */
-void initLogr(const char *LOGFILE){
+void initLogr(const char *LOGFILE)
+{
     logVars.lfp=fopen(LOGFILE, "a");
     if(logVars.lfp == NULL){
         printf("Error opening log file '%s', exit..\n",LOGFILE);
@@ -50,12 +52,14 @@ void initLogr(const char *LOGFILE){
 }
 
 /* Always call after use of logger */
-void termLogr(){
+void termLogr()
+{
     fclose(logVars.lfp);
 }
 
 /* The actual logging function */
-void logr(int sev, const char *msg, ...){
+void logr(int sev, const char *msg, ...)
+{
     if(sev >= LOGLVL && sev < MAXLOGLVL){
 
         char buf[MAXCHARS];
